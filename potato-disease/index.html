@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            margin-top: 0;
+        }
+        .container input[type="file"] {
+            margin: 10px 0;
+        }
+        .container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .container button:disabled {
+            background-color: #cccccc;
+        }
+        .container .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image</h1>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button id="uploadButton" disabled>Upload</button>
+        <div class="result" id="class_name"></div>
+        <div class="result" id="confidence"></div>
+        <img id="uploadedImage" src="" alt="Uploaded Image" style="display: none;">
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const uploadButton = document.getElementById('uploadButton');
+        const resultDiv = document.getElementById('class_name');
+        const conf_Div = document.getElementById('confidence');
+        const uploadedImage = document.getElementById('uploadedImage');
+
+        imageUpload.addEventListener('change', () => {
+            if (imageUpload.files.length > 0) {
+                uploadButton.disabled = false;
+                const file = imageUpload.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                uploadButton.disabled = true;
+                uploadedImage.style.display = 'none';
+            }
+        });
+
+        uploadButton.addEventListener('click', async () => {
+            const file = imageUpload.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('http://localhost:8000/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                res_text = `${result.message}`;
+                const splitText = res_text.split(',');
+                resultDiv.textContent = splitText[0];
+                conf_Div.textContent = splitText[1];
+            } else {
+                resultDiv.textContent = 'Error uploading image.';
+            }
+        });
+    </script>
+</body>
+</html>
