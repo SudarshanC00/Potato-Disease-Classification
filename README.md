@@ -33,7 +33,7 @@ This project is a machine learning application designed to classify potato leaf 
 ## Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YourUsername/Potato-Disease-Classification.git
+   git clone https://github.com/SudarshanC00/Potato-Disease-Classification.git
    ```
 2. Navigate to the project directory:
    ```bash
